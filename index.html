@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Fi Scanner | Votre Portail Stellaire de Connexion</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.1.0/dist/jsQR.min.js"></script>
+  
+  <style>
+    /* VARIABLES CSS - Palette de Couleurs Galactique */
+    :root {
+      --primary-galaxy-blue: #0A192F; /* Bleu Nuit Profond */
+      --secondary-galaxy-purple: #8B5CF6; /* Violet Étoilé */
+      --accent-galaxy-cyan: #22D3EE; /* Cyan Lumineux */
+      --text-light: #E2E8F0; /* Texte Clair pour contraste */
+      --text-dark: #1F2937; /* Texte Sombre pour certaines sections */
+      --card-background: #1A273D; /* Fond de carte légèrement plus clair que le primaire */
+      --button-hover-darken: #7c44ea;
+      --gradient-start: #0F1D36;
+      --gradient-end: #1A2A40;
+      --font-family-sans: 'Montserrat', sans-serif; /* Police plus moderne et élégante */
+      --glow-color: rgba(34, 211, 238, 0.7); /* Cyan pour la lueur */
+    }
+
+    /* Importer une police Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+    body {
+      font-family: var(--font-family-sans);
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      background-size: 400% 400%; /* Préparer pour l'animation du dégradé */
+      animation: gradientBackground 15s ease infinite; /* Animation du fond */
+      color: var(--text-light);
+      margin: 0;
+      padding: 0;
+      line-height: 1.8; /* Espacement de ligne amélioré */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animation du fond galactique */
+    @keyframes gradientBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Effet "étoiles" ou particules légères */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAwIiBoZWlnaHQ9IjcwMCIgdmlld0JveD0iMCAwIDcwMCA3MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8ZGVmcz4KICAgICAgPHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iNTAuMDA2JSIgY3k9IjUwJSIgcj0iNTAuMDA2JSI+CiAgICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI0ZGRiIgb2Zmc2V0PSIwJSIvPgogICAgICAgIDxzdG9wIHN0b3AtY29sb3JPSCIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjAiIG9mZnNldD0iMTAwJSIvPgogICAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPC9kZWZzPgogICAgPGNpcmNsZIGN4PSIwIiBjeT0iMCIgcj0iMjI1IiBmaWxsPSJ1cmwoI2EpIiBvcGFjaXR5PSIwLjA0Ii8+CiAgICA8Y2lyY2xlIGN4PSI3MDAiIGN5PSI3MDAiIHI9IjIyNSIgZmlsbD0idXJsKCNhKSIgb3BhY2l0eT0iMC4wNCIvPgogICAgPGNpcmNsZSBjeD0iNzAwIiBjeT0iMCIgcj0iMjI1IiBmaWxsPSJ1cmwoI2EpIiBvcGFjaXR5PSIwLjA0Ii8+CiAgICA8Y2lyY2xlIGN4PSIwIiBjeT0iNzAwIiByPSIyMjUiIGZpbGw9InVybCgkYykiIG9wYWNpdHk9IjAuMDQiLz4KPC9zdmc+') no-repeat center center / cover;
+      opacity: 0.1; /* Transparence pour un effet subtil */
+      z-index: -1; /* Placer derrière le contenu */
+      animation: twinkle 60s linear infinite; /* Animation très lente pour un effet d'étoiles */
+    }
+
+    @keyframes twinkle {
+        from { transform: translate(0, 0); }
+        to { transform: translate(-100px, -100px); } /* Déplacer légèrement le fond */
+    }
+
+
+    /* HEADER - Bandeau supérieur avec effet de lueur */
+    header {
+      background-color: var(--primary-galaxy-blue);
+      color: var(--text-light);
+      padding: 20px 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-shadow: 0 0 10px var(--glow-color); /* Effet de lueur sur le titre */
+    }
+    
+    header h1 i {
+        color: var(--accent-galaxy-cyan);
+        margin-right: 10px;
+    }
+
+    /* CONTENEUR PRINCIPAL */
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      flex-grow: 1; /* Permet au contenu de s'étirer */
+      gap: 40px; /* Espace entre les sections */
+    }
+
+    /* STYLE DE LA CARTE PRINCIPALE (SCANNER) */
+    .card {
+      width: 100%;
+      max-width: 550px;
+      padding: 40px;
+      background-color: var(--card-background);
+      border-radius: 20px; /* Rayon plus grand pour un look futuriste */
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--glow-color) inset; /* Ombre plus prononcée + lueur interne */
+      text-align: center;
+      animation: fadeInFromTop 0.8s ease-out; /* Animation d'arrivée */
+      border: 1px solid var(--accent-galaxy-cyan); /* Bordure fine lumineuse */
+    }
+
+    @keyframes fadeInFromTop {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .card h2 {
+        color: var(--accent-galaxy-cyan);
+        margin-top: 0;
+        font-size: 1.8em;
+        text-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+    }
+    
+    .card p {
+        color: var(--text-light);
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+
+    /* INPUT FILE ET BOUTON - Design futuriste */
+    #qr-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    #qr-code {
+      padding: 15px;
+      border: 2px solid var(--secondary-galaxy-purple); /* Bordure épaisse violette */
+      border-radius: 10px;
+      background-color: var(--primary-galaxy-blue);
+      color: var(--text-light);
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    #qr-code::-webkit-file-upload-button {
+        background-color: var(--secondary-galaxy-purple);
+        color: var(--text-light);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #qr-code:hover {
+        border-color: var(--accent-galaxy-cyan);
+        box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+    }
+
+    #submit-btn {
+      padding: 15px 30px;
+      background: linear-gradient(45deg, var(--secondary-galaxy-purple), var(--accent-galaxy-cyan)); /* Dégradé pour le bouton */
+      color: var(--primary-galaxy-blue); /* Texte sombre pour contraster avec le bouton lumineux */
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden; /* Pour l'effet de brillance */
+    }
+
+    #submit-btn:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-galaxy-cyan);
+    }
+    
+    /* Effet de brillance sur le bouton */
+    #submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: skewX(-30deg);
+        transition: 0.7s;
+    }
+
+    #submit-btn:hover::before {
+        left: 100%;
+    }
+
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      border-radius: 10px;
+      background-color: var(--card-background);
+      border: 1px solid var(--secondary-galaxy-purple);
+      color: var(--text-light);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+    }
+
+    /* SECTION DE MOTIVATION - Plus visuelle */
+    .section-motivation {
+        background: linear-gradient(90deg, var(--primary-galaxy-blue) 0%, rgba(139, 92, 246, 0.2) 50%, var(--primary-galaxy-blue) 100%);
+        padding: 50px 30px;
+        text-align: center;
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--secondary-galaxy-purple);
+        animation: scaleIn 0.8s ease-out forwards;
+        opacity: 0; /* caché initiallement */
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .section-motivation h3 {
+        color: var(--accent-galaxy-cyan);
+        font-size: 2em;
+        margin-bottom: 25px;
+        text-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+    }
+    
+    .section-motivation p {
+        font-size: 1.4em;
+        font-style: italic;
+        color: var(--text-light);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* BLOCS D'INFORMATIONS - Design cohérent */
+    .section-details {
+        display: flex;
+        justify-content: center; /* Centrer les blocs */
+        gap: 30px;
+        flex-wrap: wrap;
+        max-width: 1000px;
+        width: 100%;
+    }
+
+    .info-block {
+        flex: 1;
+        min-width: 300px; /* Taille minimale des blocs */
+        max-width: 45%;
+        padding: 30px;
+        background-color: var(--card-background);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--secondary-galaxy-purple);
+        text-align: left;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .info-block:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 25px rgba(139, 92, 246, 0.5);
+    }
+
+    .info-block h3 {
+        color: var(--accent-galaxy-cyan);
+        font-size: 1.6em;
+        margin-bottom: 15px;
+    }
+
+    .info-block i {
+        color: var(--secondary-galaxy-purple);
+        font-size: 1.8em;
+        margin-right: 15px;
+    }
+    
+    .info-block p {
+        color: var(--text-light);
+        opacity: 0.8;
+    }
+
+    .info-block a {
+        color: var(--accent-galaxy-cyan);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .info-block a:hover {
+        color: var(--secondary-galaxy-purple);
+        text-decoration: underline;
+    }
+
+    /* FOOTER - Design sombre et élégant */
+    footer {
+      background-color: var(--primary-galaxy-blue);
+      color: var(--text-light);
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.3);
+      margin-top: auto; /* Pousse le footer vers le bas */
+    }
+
+    .footer-links {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    footer a {
+      color: var(--accent-galaxy-cyan);
+      text-decoration: none;
+      margin: 0 20px;
+      transition: color 0.3s;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      color: var(--secondary-galaxy-purple);
+    }
+
+    .social-icons {
+        margin-top: 20px;
+    }
+
+    .social-icons a {
+        font-size: 2em;
+        margin: 0 15px;
+        color: var(--secondary-galaxy-purple);
+        transition: color 0.3s, transform 0.3s;
+    }
+
+    .social-icons a:hover {
+        color: var(--accent-galaxy-cyan);
+        transform: translateY(-5px) scale(1.1);
+    }
+
+    .developer-info {
+        font-size: 1em;
+        margin-top: 25px;
+        color: var(--text-light);
+        opacity: 0.7;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+        header h1 {
+            font-size: 1.6em;
+        }
+        #main-container {
+            padding: 30px 15px;
+        }
+        .card {
+            padding: 25px;
+            border-radius: 15px;
+        }
+        .card h2 {
+            font-size: 1.5em;
+        }
+        .section-motivation {
+            padding: 30px 15px;
+            border-radius: 15px;
+        }
+        .section-motivation h3 {
+            font-size: 1.6em;
+        }
+        .section-motivation p {
+            font-size: 1.1em;
+        }
+        .section-details {
+            flex-direction: column;
+            align-items: center;
+        }
+        .info-block {
+            max-width: 90%;
+            margin-bottom: 20px;
+        }
+        footer a {
+            margin: 0 10px;
+        }
+        .social-icons a {
+            font-size: 1.8em;
+            margin: 0 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 1.4em;
+        }
+        .card {
+            padding: 20px;
+        }
+        .card h2 {
+            font-size: 1.3em;
+        }
+        #submit-btn {
+            font-size: 1em;
+            padding: 12px 20px;
+        }
+        #result {
+            font-size: 1em;
+            padding: 15px;
+        }
+        .section-motivation p {
+            font-size: 1em;
+        }
+        .info-block {
+            min-width: unset;
+            max-width: 100%;
+        }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1><i class="fas fa-satellite-dish"></i> QR-Fi Scanner</h1>
+  </header>
+
+  <div id="main-container">
+    
+    <div class="card">
+      <h2>Décodez l'Inconnu. Connectez-vous à l'Infini.</h2>
+      <p>Lancez-vous dans l'exploration des réseaux Wi-Fi. Téléchargez votre image de code QR et révélez ses secrets instantanément.</p>
+      
+      <form id="qr-form">
+        <input type="file" id="qr-code" accept="image/*" required>
+        <button id="submit-btn" type="submit"><i class="fas fa-rocket"></i> Lancer le Scan Galactique</button>
+      </form>
+      
+      <div id="result">Préparez-vous à une connexion au-delà des étoiles...</div>
+    </div>
+    
+    <div class="section-motivation">
+        <h3>Votre Portail Vers la Connexion de Demain</h3>
+        <p>
+            "Dans la vaste constellation numérique, ne perdez plus une seconde à chercher. QR-Fi est votre étoile guide, transformant l'invisible en accessible, l'attente en instantanéité. Connectez-vous, créez, explorez – avec la vitesse de la lumière et la simplicité de l'univers."
+        </p>
+    </div>
+
+    <div class="section-details">
+        <div class="info-block">
+            <h3><i class="fas fa-star-of-david"></i> Notre Constellation</h3>
+            <p>QR-Fi Scanner est né de la vision de rendre la technologie plus intuitive et plus rapide. Nous bâtissons des ponts entre le monde physique et le cyberespace, un scan à la fois. Notre engagement: l'innovation au service de votre sérénité digitale.</p>
+        </div>
+        
+        <div class="info-block">
+            <h3><i class="fas fa-user-astronaut"></i> Entrez en Orbite</h3>
+            <p>Une question interstellaire ? Une suggestion lumineuse ? Ou juste un salut amical ? N'hésitez pas à nous envoyer un signal. Notre équipe est prête à voyager pour vous assister.</p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:muviriarsene@ucbc.edu.cd">muviriarsene@ucbc.edu.cd</a></p>
+        </div>
+    </div>
+    
+  </div>
+
+  <footer>
+    <p>&copy; 2025 QR-Fi Scanner. Tous droits de l'univers réservés.</p>
+    
+    <div class="footer-links">
+        <a href="#main-container">Accueil</a> |
+        <a href="mailto:muviriarsene@ucbc.edu.cd">Contact</a>
+    </div>
+    
+    <div class="social-icons">
+      <a href="https://www.facebook.com/san.arsene.2025" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    </div>
+
+    <p class="developer-info">
+        Conçu et propulsé par l'énergie créative de **San Arsène**.
+    </p>
+
+  </footer>
+
+  <script>
+    const qrForm = document.getElementById('qr-form');
+    const qrCodeInput = document.getElementById('qr-code');
+    const resultDiv = document.getElementById('result');
+
+    qrForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const file = qrCodeInput.files[0];
+      
+      if (!file) {
+        resultDiv.innerText = 'Veuillez sélectionner un fichier image pour lancer le scan.';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          
+          if (typeof jsQR === 'function') {
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const code = jsQR(imageData.data, imageData.width, imageData.height);
+              
+              if (code) {
+                resultDiv.innerText = `🌌 Données décodées : ${code.data}`;
+              } else {
+                resultDiv.innerText = '🌑 Aucun code QR détecté. Réessayez avec une image plus claire.';
+              }
+          } else {
+             resultDiv.innerText = '⚠️ Erreur Cosmique : La librairie jsQR (nécessaire au décodage) est manquante.';
+          }
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+  </html>
